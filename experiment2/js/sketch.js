@@ -42,7 +42,6 @@ function draw() {
       if (toggle == 3) rotate(PI);
 
       stroke(int(random(0, 255)), int(random(0, 255)), rowColor);
-      // draw module
       for (var i = 0; i < circleCount; i++) {
         var diameter = map(i, 0, circleCount, tileWidth, endSize);
         var offset = map(i, 0, circleCount, 0, endOffset);
