@@ -35,6 +35,7 @@ function draw() {
       translate(tileWidth * gridX, tileHeight * gridY);
       scale(1, tileHeight / tileWidth);
 
+      // random
       var toggle = int(random(0, 4));
       if (toggle == 0) rotate(-HALF_PI);
       if (toggle == 1) rotate(0);
