@@ -1,67 +1,113 @@
-// sketch.js - purpose and description here
-// Author: Your Name
-// Date:
+'use strict';
 
-// Here is how you might set up an OOP p5.js project
-// Note that p5.js looks for a file called sketch.js
+var formResolution = 6;
+var centerX;
+var centerY;
+var x = [];
+var y = [];
 
-// Constants - User-servicable parts
-// In a longer project I like to put these in a separate file
-const VALUE1 = 1;
-const VALUE2 = 2;
+//- added vars
+var strokeWeightVar = 0;
 
-// Globals
-let myInstance;
-let canvasContainer;
-
-class MyClass {
-    constructor(param1, param2) {
-        this.property1 = param1;
-        this.property2 = param2;
-    }
-
-    myMethod() {
-        // code to run when method is called
-    }
-}
-
-// setup() function is called once when the program starts
 function setup() {
-    // place our canvas, making it fit our container
-    canvasContainer = $("#canvas-container");
-    let canvas = createCanvas(canvasContainer.width(), canvasContainer.height());
-    canvas.parent("canvas-container");
-    // resize canvas is the page is resized
-    $(window).resize(function() {
-        console.log("Resizing...");
-        resizeCanvas(canvasContainer.width(), canvasContainer.height());
-    });
-    // create an instance of the class
-    myInstance = new MyClass(VALUE1, VALUE2);
+  createCanvas(windowWidth, windowHeight);
 
-    var centerHorz = windowWidth / 2;
-    var centerVert = windowHeight / 2;
+  // init shape
+  //-start at a random position on the canvas
+  centerX = random(0, width);
+  centerY = random(((height * 3) / 5), ((height * 4) / 5));
+  var angle = radians(360 / formResolution);
+  for (var i = 0; i < formResolution; i++) {
+    x.push(10);
+    y.push(10);
+  }
+  
+  stroke(int(random(0, 255)), int(random(0, 255)), int(random(0, 255)));
+  
+  strokeWeightVar = random(0.15, 0.95);
+  strokeWeight(strokeWeightVar);
+  background(255);
 }
 
-// draw() function is called repeatedly, it's the main animation loop
 function draw() {
-    background(220);    
-    // call a method on the instance
-    myInstance.myMethod();
+  // floating towards mouse position
+  strokeWeight(strokeWeightVar);
+  //-I want it to move faster when the stroke weight is heavier
+  centerX += (mouseX - centerX) * (0.01 / strokeWeightVar);
+  centerY += (mouseY - centerY) * (0.01 / strokeWeightVar);
 
-    // Put drawings here
-    var centerHorz = canvasContainer.width() / 2 - 125;
-    var centerVert = canvasContainer.height() / 2 - 125;
-    fill(234, 31, 81);
-    noStroke();
-    rect(centerHorz, centerVert, 250, 250);
-    fill(255);
-    textStyle(BOLD);
-    textSize(140);
-    text("p5*", centerHorz + 10, centerVert + 200);
+  // calculate new points
+  for (var i = 0; i < formResolution; i++) {
+    x[i] += random(random(-2.5, 1), random(-1, 2.5));
+    y[i] += random(random(-2.5, 1), random(-1, 2.5));
+    //-uncomment to add shapes to corners, randomized size
+    ellipse(x[i] + centerX + random(-x[i], x[i]), y[i] + centerY + random(-y[i],  y[i]), random(1, 5), random(1, 5));
+  }
+
+  noFill();
+  
+  beginShape();
+  // first controlpoint
+  curveVertex(x[formResolution - 1] + centerX, y[formResolution - 1] + centerY);
+
+  // only these points are drawn
+  for (var i = 0; i < formResolution; i++) {
+    curveVertex(x[i] + centerX, y[i] + centerY);
+  }
+  curveVertex(x[0] + centerX, y[0] + centerY);
+
+  // end controlpoint
+  curveVertex(x[1] + centerX, y[1] + centerY);
+  endShape();
+  
+  
+  // if at any point the shape gets too close to the mouse, reset
+  if(abs(mouseX - centerX) < 30 && abs(mouseY - centerY) < 30){
+     reset();
+  }
 }
 
-// mousePressed() function is called once after every time a mouse button is pressed
 function mousePressed() {
-    // code to run when mouse is pressed
+  // empty the arrays
+  stroke(int(random(0, 255)), int(random(0, 255)), int(random(0, 255)));
+  
+  while(x.length > 0){
+    x.pop();
+  }
+  while(y.length > 0){
+    y.pop();
+  }
+  //-start at a random position on the canvas
+  centerX = random(0, width);
+  centerY = random(((height * 3) / 5), ((height * 4) / 5));
+  var angle = radians(360 / formResolution);
+  for (var i = 0; i < formResolution; i++) {
+    x.push(-10);
+    y.push(10);
+  }
+  
+  strokeWeightVar = random(0.15, 0.95);
+  strokeWeight(strokeWeightVar);
+}
+
+function reset() {
+  stroke(int(random(0, 255)), int(random(0, 255)), int(random(0, 255)));
+  // empty the arrays
+  while(x.length > 0){
+    x.pop();
+  }
+  while(y.length > 0){
+    y.pop();
+  }
+  //-start at a random position on the canvas
+  centerX = random(0, width);
+  centerY = random(((height * 3) / 5), ((height * 4) / 5));
+  var angle = radians(360 / formResolution);
+  for (var i = 0; i < formResolution; i++) {
+    x.push(-10);
+    y.push(10);
+  }
+  
+  strokeWeightVar = random(0.15, 0.95);
+  strokeWeight(strokeWeightVar);
 }
