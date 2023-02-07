@@ -1,67 +1,86 @@
-// sketch.js - purpose and description here
-// Author: Your Name
-// Date:
+'use strict';
 
-// Here is how you might set up an OOP p5.js project
-// Note that p5.js looks for a file called sketch.js
+var img;
 
-// Constants - User-servicable parts
-// In a longer project I like to put these in a separate file
-const VALUE1 = 1;
-const VALUE2 = 2;
+var xCreep = 0;
+var yCreep = 0;
+var dirCreep = 0;
 
-// Globals
-let myInstance;
-let canvasContainer;
+var filterModes;
 
-class MyClass {
-    constructor(param1, param2) {
-        this.property1 = param1;
-        this.property2 = param2;
-    }
+var filterIter = 0;
 
-    myMethod() {
-        // code to run when method is called
-    }
+function preload() {
+  img = loadImage('data/pic.png');
 }
 
-// setup() function is called once when the program starts
 function setup() {
-    // place our canvas, making it fit our container
-    canvasContainer = $("#canvas-container");
-    let canvas = createCanvas(canvasContainer.width(), canvasContainer.height());
-    canvas.parent("canvas-container");
-    // resize canvas is the page is resized
-    $(window).resize(function() {
-        console.log("Resizing...");
-        resizeCanvas(canvasContainer.width(), canvasContainer.height());
-    });
-    // create an instance of the class
-    myInstance = new MyClass(VALUE1, VALUE2);
-
-    var centerHorz = windowWidth / 2;
-    var centerVert = windowHeight / 2;
+  createCanvas(1024, 780);
+  tint(random(0, 255), random(0, 255), random(0, 255), random(1, 255));
+  image(img, 0, 100);
+  filterModes = [
+    BLUR,
+    ERODE,
+    INVERT,
+    ERODE
+  ];
 }
 
-// draw() function is called repeatedly, it's the main animation loop
 function draw() {
-    background(220);    
-    // call a method on the instance
-    myInstance.myMethod();
+  if (dirCreep === 0) {
+      var x1 = floor(random(xCreep - 20, xCreep));
+      var y1 = random(50, height);
+  }
+  
+  if (dirCreep == 1) {
+      var x1 = floor(random(width));
+      var y1 = floor(random(yCreep - 20, yCreep));
+  }
+  
 
-    // Put drawings here
-    var centerHorz = canvasContainer.width() / 2 - 125;
-    var centerVert = canvasContainer.height() / 2 - 125;
-    fill(234, 31, 81);
-    noStroke();
-    rect(centerHorz, centerVert, 250, 250);
-    fill(255);
-    textStyle(BOLD);
-    textSize(140);
-    text("p5*", centerHorz + 10, centerVert + 200);
-}
+  if (dirCreep === 0) {
+      var x2 = x1;
+      var y2 = round(y1 + random(-50, 50));
+  }
+  
+  if (dirCreep === 1) {
+      var x2 = round(x1 + random(-50, 50));
+      var y2 = y1;
+  }
+  
 
-// mousePressed() function is called once after every time a mouse button is pressed
-function mousePressed() {
-    // code to run when mouse is pressed
+  var w = 50;
+  var h = 50;
+
+  set(x2, y2, get(x1, y1, w, h));
+  
+  // filter(BLUR);
+  if (dirCreep == 0) {
+      xCreep += 1;
+  }
+  if (dirCreep == 1) {
+      yCreep += 1;
+  }
+  
+  if (xCreep == width) {
+      xCreep = 0;
+      dirCreep = 1;
+      filter(filterModes[filterIter]);
+      if (filterIter == 3) {
+          filterIter = 0;
+      } else {
+          filterIter++;
+      }
+  }
+  
+  if (yCreep == height) {
+      yCreep = 0;
+      dirCreep = 0;
+      filter(filterModes[filterIter]);
+      if (filterIter == 3) {
+          filterIter = 0;
+      } else {
+          filterIter++;
+      }
+  }
 }
