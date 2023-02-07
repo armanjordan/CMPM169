@@ -11,7 +11,7 @@ var filterModes;
 var filterIter = 0;
 
 function preload() {
-  img = loadImage('data/pic.png');
+  img = loadImage('pic.png');
 }
 
 function setup() {
