@@ -1,67 +1,104 @@
-// sketch.js - purpose and description here
-// Author: Your Name
-// Date:
+var particles = [];
 
-// Here is how you might set up an OOP p5.js project
-// Note that p5.js looks for a file called sketch.js
+var mouseClicks = 0;
 
-// Constants - User-servicable parts
-// In a longer project I like to put these in a separate file
-const VALUE1 = 1;
-const VALUE2 = 2;
-
-// Globals
-let myInstance;
-let canvasContainer;
-
-class MyClass {
-    constructor(param1, param2) {
-        this.property1 = param1;
-        this.property2 = param2;
-    }
-
-    myMethod() {
-        // code to run when method is called
-    }
-}
-
-// setup() function is called once when the program starts
 function setup() {
-    // place our canvas, making it fit our container
-    canvasContainer = $("#canvas-container");
-    let canvas = createCanvas(canvasContainer.width(), canvasContainer.height());
-    canvas.parent("canvas-container");
-    // resize canvas is the page is resized
-    $(window).resize(function() {
-        console.log("Resizing...");
-        resizeCanvas(canvasContainer.width(), canvasContainer.height());
-    });
-    // create an instance of the class
-    myInstance = new MyClass(VALUE1, VALUE2);
-
-    var centerHorz = windowWidth / 2;
-    var centerVert = windowHeight / 2;
+  angleMode(DEGREES);
+	createCanvas(windowWidth, windowHeight, WEBGL);
+	background(100);
+  // in setup it fills an array of particles
+	for(var i = 0; i<200; i++){
+		particles.push(new particle);
+	}
+	noStroke();
 }
 
-// draw() function is called repeatedly, it's the main animation loop
 function draw() {
-    background(220);    
-    // call a method on the instance
-    myInstance.myMethod();
-
-    // Put drawings here
-    var centerHorz = canvasContainer.width() / 2 - 125;
-    var centerVert = canvasContainer.height() / 2 - 125;
-    fill(234, 31, 81);
-    noStroke();
-    rect(centerHorz, centerVert, 250, 250);
-    fill(255);
-    textStyle(BOLD);
-    textSize(140);
-    text("p5*", centerHorz + 10, centerVert + 200);
+  rotateX(-mouseY);
+	rotateY(mouseX);
+	offset = 0;
+	background(51);
+	for(var i = 0; i<particles.length; i++){
+		particles[i].update();
+	}
+	for(var i = 0; i<particles.length; i++){
+		if(particles[i+offset].ded){
+			particles.splice(i+offset, 1);
+			offset--;
+			i++;
+		}
+	}
 }
 
-// mousePressed() function is called once after every time a mouse button is pressed
-function mousePressed() {
-    // code to run when mouse is pressed
+class particle{
+	constructor(){
+		this.x = 0;
+		this.y = 0;
+		this.z = 0;
+		this.ded = false;
+		// this.vel = [random(-0.2, 0.2), random(-0.2, 0.2), random(-0.2, 0.2)];
+        this.vel = [0.15 + 0.01*mouseClicks, 0.15 + 0.01*mouseClicks, 0.15 + 0.01*mouseClicks];
+      
+		this.total = 0.5/(sqrt((this.vel[0]*this.vel[0])+(this.vel[1]*this.vel[1])+(this.vel[2]*this.vel[2]))+random(-0.9, -0.3));
+		this.vel = [this.vel[0]*this.total, this.vel[1]*this.total, this.vel[2]*this.total];
+		// this.color = random(50, 255);
+      if (mouseClicks % 3 === 0) {
+            this.color = random(0, 255);
+            fill(this.color, this.color - random(0, 255), this.color - random(0, 255));
+        } else {
+          if (mouseClicks % 2 === 0) {
+            this.color = random(0, 255);
+            fill(this.color + random(0, 255), this.color, this.color - random(0, 255));
+          } else {
+            if (mouseClicks % 1 === 0) {
+              this.color = random(0, 255);
+              fill(this.color - random(0, 255), this.color + random(0, 255), this.color);
+            }
+          }
+        }
+		this.age = 0;
+	}
+	update(){
+		// this.age += random(0.2, 2);
+        this.age += 0.25 * (mouseClicks / 10);
+		if(this.ded === false && 150<this.age){
+			this.ded = true;
+		}
+		this.vel = [this.vel[0]*random(0.99, 1.001), this.vel[1]*random(0.99, 1.001), this.vel[2]*random(0.99, 1.001)];
+        if (mouseClicks % 3 === 0) {
+            this.x += this.vel[0];
+            // this.color = random(50, 240);
+            // fill(this.color, this.color - 50, this.color + 50);
+        } else {
+          if (mouseClicks % 2 === 0) {
+            this.y += this.vel[1];
+            // this.color = random(50, 240);
+            // fill(this.color + 50, this.color, this.color - 50);
+          } else {
+            if (mouseClicks % 1 === 0) {
+              this.z += this.vel[2];
+              // this.color = random(50, 240);
+              // fill(this.color - 50, this.color + 50, this.color);
+            }
+          }
+        }
+		
+        
+		translate(this.x, this.y, this.z);
+		// sphere(10, 8, 4);
+        rotateX(mouseClicks % 10);
+        rotateY(mouseClicks % 10);
+        box(15);
+		translate(-this.x, -this.y, -this.z);
+	}
+}
+
+function mouseReleased() {
+	for(var i = 0; i<200; i++){
+		particles.push(new particle);
+	}
+    mouseClicks += 1;
+    if(mouseClicks == 35) {
+      mouseClicks = 0; 
+    }
 }
